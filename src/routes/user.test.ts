@@ -37,5 +37,16 @@ describe('User route', () => {
                     done()
                 })
         })
+        it('it should not GET a specific a missing user', (done) => {
+            chai.request(server)
+                .get('/user/user1')
+                .end((err, res) => {
+                    expect(res.status).to.equal(404)
+                    expect(res.body).to.deep.equal({
+                        message: 'User not found',
+                    })
+                    done()
+                })
+        })
     })
 })

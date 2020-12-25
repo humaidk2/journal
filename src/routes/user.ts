@@ -20,7 +20,7 @@ router.get('/', async (req: Request, res: Response) => {
 router.get('/:userId', async (req: Request, res: Response) => {
     const user = users.find((user) => user.id === req.params.userId)
     if (user) res.status(200).send(user)
-    else res.status(404).send('User not found')
+    else res.status(404).send({ message: 'User not found' })
 })
 
 export default router
