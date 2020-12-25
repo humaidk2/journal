@@ -8,12 +8,12 @@ chai.use(chaiHttp)
 
 const users = [
     {
-        id: 'user0',
+        Id: 'user0',
         username: 'humaidk2',
         password: 'password',
-        first_name: 'humaid',
-        last_name: 'khan',
-        date_of_birth: '2020-04-13T00:00:00.000+08:00',
+        firstName: 'humaid',
+        lastName: 'khan',
+        dateOfBirth: '2020-04-13T00:00:00.000+08:00',
     },
 ]
 

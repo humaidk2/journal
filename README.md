@@ -75,7 +75,7 @@ This project is divided in to three components:
 ### Tasks to be completed
 
 [X] Add tests for routes
-[] Create sequelize models
+[X] Create sequelize models
 [] Test sequelize models
 [] Integrate Sequelize models
 [] Add other crud routes

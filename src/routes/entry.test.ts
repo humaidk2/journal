@@ -8,25 +8,25 @@ chai.use(chaiHttp)
 
 const entries = [
     {
-        id: 'entry0',
+        Id: 'entry0',
         data: 'I live the best life',
-        created_at: '05-12-2020',
-        updated_at: '05-12-2020',
-        user_id: 'user0',
+        createdAt: '05-12-2020',
+        updatedAt: '05-12-2020',
+        UserId: 'user0',
     },
     {
-        id: 'entry1',
+        Id: 'entry1',
         data: 'I live the coolest life',
-        created_at: '08-12-2020',
-        updated_at: '08-12-2020',
-        user_id: 'user0',
+        createdAt: '08-12-2020',
+        updatedAt: '08-12-2020',
+        UserId: 'user0',
     },
     {
-        id: 'entry2',
+        Id: 'entry2',
         data: 'I live the weirdest life',
-        created_at: '10-12-2020',
-        updated_at: '10-12-2020',
-        user_id: 'user0',
+        createdAt: '10-12-2020',
+        updatedAt: '10-12-2020',
+        UserId: 'user0',
     },
 ]
 
