@@ -76,7 +76,7 @@ This project is divided in to three components:
 
 [X] Add tests for routes
 [X] Create sequelize models
-[] Test sequelize models
+[X] Test sequelize models
 [] Integrate Sequelize models
 [] Add other crud routes
 [] Create react native app
