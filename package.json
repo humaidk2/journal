@@ -4,7 +4,15 @@
   "description": "React Native app to store journal, all posts will be encrypted and protected with fingerprint/pin",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint \"src/**/*.{js,ts,tsx}\" --quiet --fix",
+    "build": "rimraf ./build && tsc",
+    "tslint": "tslint --project tsconfig.json",
+    "start": "npm run build && NODE_ENV=production node ./build/server.js",
+    "dev": "nodemon",
+    "test": "mocha -r ts-node/register \"src/**/*.test.ts\"",
+    "prettier:base": "prettier --parser typescript --single-quote",
+    "prettier:check": "npm run prettier:base -- --list-different \"src/**/*.{ts,tsx}\"",
+    "prettier:write": "npm run prettier:base -- --write \"src/**/*.{ts,tsx}\""
   },
   "repository": {
     "type": "git",
@@ -21,6 +29,7 @@
     "helmet": "^4.2.0",
     "mysql": "^2.18.1",
     "mysql2": "^2.2.5",
+    "rimraf": "^3.0.2",
     "sequelize": "^6.3.5"
   },
   "devDependencies": {
@@ -34,6 +43,7 @@
     "@typescript-eslint/eslint-plugin": "^4.11.0",
     "@typescript-eslint/parser": "^4.11.0",
     "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
     "eslint": "^7.16.0",
     "eslint-config-prettier": "^7.1.0",
     "eslint-plugin-prettier": "^3.3.0",

@@ -1,19 +1,22 @@
-const express = require("express")
-const helmet = require("helmet")
-const userRouter = require("./routes/user")
-const entryRouter = require("./routes/entry")
+import express = require('express')
+import helmet = require('helmet')
+import userRouter from './routes/user'
+import entryRouter from './routes/entry'
 
 const app = express()
 
 const PORT = process.env.PORT || 3000
 
 app.use(helmet())
-app.set("json spaces", 2)
-app.use("/user", userRouter)
-app.use("/entry", entryRouter)
+app.set('json spaces', 2)
+app.use('/user', userRouter)
+app.use('/entry', entryRouter)
+app.use('/*', (req, res) => {
+    res.status(404).send({})
+})
 
-app.listen(PORT, () => {
-    console.log("listening on port", PORT, "...")
+export default app.listen(PORT, () => {
+    console.log('listening on port', PORT, '...')
 })
 
 // 2 routes for V1
