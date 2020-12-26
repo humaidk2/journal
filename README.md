@@ -77,7 +77,7 @@ This project is divided in to three components:
 [X] Add tests for routes
 [X] Create sequelize models
 [X] Test sequelize models
-[] Integrate Sequelize models
+[X] Integrate Sequelize models
 [] Add other crud routes
 [] Create react native app
 [] Display entries in app using ock data
@@ -87,3 +87,16 @@ This project is divided in to three components:
 [] Setup registration page
 [] Integrate auth
 [] Setup encrypted data
+
+-   Finish integrating sequelize with routes
+-   Add mysql to docker
+-   Separate auth service
+-   Fix routes now that auth is separate, we get all user data from token!
+-   Test api routes using tokens
+
+            /--------- Auth Service - signup/verifyEmail/login/refresh/updateUserInfo(delete access token)
+           /
+          /
+         /
+
+    User ------------- Entry Api - Postentry/GetEntry/GetallEntries/DeleteEntry/StoreKey/GetKey (get user id from access token)
