@@ -2,12 +2,13 @@ version: '2.4'
 services:
     db:
         image: mysql
-        command: --default-authentication-plugin=mysql_native_password
+        command: --default-authentication-plugin=mysql_native_password --init-file /data/application/init.sql
         restart: always
-        ports: [3306:3306]
+        volumes:
+            - ./init.sql:/data/application/init.sql
         environment:
-            - MYSQL_ROOT_PASSWORD: diaryJournal
-        network:
+            - MYSQL_ROOT_PASSWORD=diaryJournal
+        networks:
             - journal-network
     node:
         build:
@@ -23,8 +24,10 @@ services:
             - JOURNAL_DB_PASS=diaryJournal
         volumes:
             - ./:/usr/src/app/
-        network:
+        networks:
             - journal-network
+        depends_on: [db]
+        restart: always
 networks:
     journal-network:
         driver: bridge
