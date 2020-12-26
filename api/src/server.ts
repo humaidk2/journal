@@ -7,7 +7,7 @@ import createDb from './models/'
 
 const db = createDb(process.env.JOURNAL_DB_NAME)
 const { User, Entry, sequelize } = db
-sequelize.sync({ force: false })
+sequelize.sync({ force: true })
 const app = express()
 
 const PORT = process.env.PORT || 3000

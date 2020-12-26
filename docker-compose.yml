@@ -12,7 +12,7 @@ services:
             - journal-network
     node:
         build:
-            context: .
+            context: ./api
             dockerfile: Dockerfile
         ports: [3000:3000]
         environment:
@@ -23,7 +23,7 @@ services:
             - JOURNAL_DB_USER=root
             - JOURNAL_DB_PASS=diaryJournal
         volumes:
-            - ./:/usr/src/app/
+            - ./api/:/usr/src/app/
         networks:
             - journal-network
         depends_on: [db]
