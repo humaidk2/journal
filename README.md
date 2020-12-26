@@ -78,9 +78,10 @@ This project is divided in to three components:
 [X] Create sequelize models
 [X] Test sequelize models
 [X] Integrate Sequelize models
+[] Separate Auth and api service
 [] Add other crud routes
 [] Create react native app
-[] Display entries in app using ock data
+[] Display entries in app using mock data
 [] Create form to add entries
 [] Load data from backend api
 [] Setup authentication routes
@@ -94,9 +95,9 @@ This project is divided in to three components:
 -   Fix routes now that auth is separate, we get all user data from token!
 -   Test api routes using tokens
 
-            /--------- Auth Service - signup/verifyEmail/login/refresh/updateUserInfo(delete access token)
+            /--------- Auth Service - signup/verifyEmail/login/refresh/updateUserInfo(delete access token, store Key)
            /
           /
          /
 
-    User ------------- Entry Api - Postentry/GetEntry/GetallEntries/DeleteEntry/StoreKey/GetKey (get user id from access token)
+    User ------------- Entry Api - Postentry/GetEntry/GetallEntries/DeleteEntry/(get user id from access token)
