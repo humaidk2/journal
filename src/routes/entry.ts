@@ -48,21 +48,33 @@ export default function (Entry: any, User: any) {
         }
     })
     router.get('/:userId', async (req: Request, res: Response) => {
-        const filteredEntries = entries.filter(
-            (entry) => entry.UserId === req.params.userId
-        )
-        if (filteredEntries.length !== 0) res.status(200).send(filteredEntries)
-        else res.status(404).send({ message: 'User has no entries' })
+        try {
+            const filteredEntries = await Entry.findAll({
+                where: {
+                    UserId: req.params.userId,
+                },
+            })
+            if (filteredEntries.length !== 0)
+                res.status(200).send(filteredEntries)
+            else res.status(404).send({ message: 'User has no entries' })
+        } catch (error) {
+            await res.status(404).send({ error })
+        }
     })
 
     router.get('/:userId/:entryId', async (req: Request, res: Response) => {
-        const entry = entries.find(
-            (entry) =>
-                entry.UserId === req.params.userId &&
-                entry.Id === req.params.entryId
-        )
-        if (entry) res.status(200).send(entry)
-        else res.status(404).send({ message: 'Entry not found' })
+        try {
+            const entry = await Entry.findOne({
+                where: {
+                    Id: req.params.entryId,
+                    UserId: req.params.userId,
+                },
+            })
+            if (entry) res.status(200).send(entry)
+            else res.status(404).send({ message: 'Entry not found' })
+        } catch (error) {
+            await res.status(404).send({ error })
+        }
     })
     return router
 }
