@@ -18,13 +18,27 @@ const users = [
 ]
 
 describe('User route', () => {
+    describe('/POST user', () => {
+        it('it should insert a User', (done) => {
+            chai.request(server)
+                .post('/user')
+                .type('form')
+                .send(users[0])
+                .end((err, res) => {
+                    expect(res.status).to.equal(200)
+                    expect(res.body.Id).to.equal(users[0].Id)
+                    done()
+                })
+        })
+    })
     describe('/GET user', () => {
         it('it should GET all users', (done) => {
             chai.request(server)
                 .get('/user')
                 .end((err, res) => {
                     expect(res.status).to.equal(200)
-                    expect(res.body).to.deep.equal(users)
+                    for (let i = 0; i < users.length; i++)
+                        expect(res.body[i].Id).to.equal(users[i].Id)
                     done()
                 })
         })
@@ -33,7 +47,7 @@ describe('User route', () => {
                 .get('/user/user0')
                 .end((err, res) => {
                     expect(res.status).to.equal(200)
-                    expect(res.body).to.deep.equal(users[0])
+                    expect(res.body.Id).to.equal(users[0].Id)
                     done()
                 })
         })
