@@ -78,13 +78,17 @@ This project is divided in to three components:
 [X] Create sequelize models
 [X] Test sequelize models
 [X] Integrate Sequelize models
-[] Separate Auth and api service
-[] Add other crud routes
+[X] Separate Auth and api service
+[X] Get docker to work
+[X] Add testing with docker
+[X] Complete and test auth service
+[] Add middleware for diary entry service
+[] Complete and test diary entry service
 [] Create react native app
 [] Display entries in app using mock data
 [] Create form to add entries
 [] Load data from backend api
-[] Setup authentication routes
+[] Add other crud routes
 [] Setup registration page
 [] Integrate auth
 [] Setup encrypted data
