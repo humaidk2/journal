@@ -1,14 +1,15 @@
-FROM node:12
+FROM node:12.3.0
 
+RUN npm i npm@latest -g
 
 RUN npm install -g nodemon ts-node
 
+
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY package.json package-lock.json* ./
 
-RUN npm install && npm cache clean --force
-
+RUN npm install --no-optional && npm cache clean --force
 COPY . .
 
 EXPOSE 3000
