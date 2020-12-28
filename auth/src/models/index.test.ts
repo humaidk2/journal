@@ -19,10 +19,13 @@ describe('Database table testing', () => {
             user = await User.create({
                 Id: 'user0',
                 username: 'humaidk2',
+                email: 'hum@google.com',
                 password: 'somehash',
                 firstName: 'Humaid',
                 lastName: 'Khan',
                 dateOfBirth: new Date('December 17, 1995 03:24:00'),
+                active: false,
+                encryptedKey: 'key0123',
             })
         })
         it('Mock User instance of User', () => {
@@ -35,6 +38,8 @@ describe('Database table testing', () => {
             expect(user).has.property('firstName')
             expect(user).has.property('lastName')
             expect(user).has.property('dateOfBirth')
+            expect(user).has.property('active')
+            expect(user).has.property('encryptedKey')
         })
         it('Mock User properties are of appropriate type', () => {
             expect(user.Id).to.be.a('string')
@@ -43,6 +48,8 @@ describe('Database table testing', () => {
             expect(user.firstName).to.be.a('string')
             expect(user.lastName).to.be.a('string')
             expect(user.dateOfBirth).to.be.a('Date')
+            expect(user.active).to.be.a('boolean')
+            expect(user.encryptedKey).to.be.a('string')
         })
         it('Mock User has properties set properly', () => {
             expect(user.Id).to.equal('user0')
@@ -53,6 +60,8 @@ describe('Database table testing', () => {
             expect(user.dateOfBirth).to.deep.equal(
                 new Date('December 17, 1995 03:24:00')
             )
+            expect(user.active).to.equal(false)
+            expect(user.encryptedKey).to.equal('key0123')
         })
     })
 })

@@ -3,10 +3,14 @@ import { Sequelize, Model, DataTypes, ModelCtor } from 'sequelize'
 interface UserInstance extends Model {
     Id: string
     username: string
+    email: string
     password: string
     firstName: string
     lastName: string
     dateOfBirth: Date
+    active: boolean
+    encryptedKey: string
+    refreshToken: string
 }
 
 export default function (sequelize: Sequelize): ModelCtor<UserInstance> {
@@ -17,6 +21,9 @@ export default function (sequelize: Sequelize): ModelCtor<UserInstance> {
             primaryKey: true,
         },
         username: {
+            type: DataTypes.STRING,
+        },
+        email: {
             type: DataTypes.STRING,
         },
         password: {
@@ -30,6 +37,15 @@ export default function (sequelize: Sequelize): ModelCtor<UserInstance> {
         },
         dateOfBirth: {
             type: DataTypes.DATE,
+        },
+        active: {
+            type: DataTypes.BOOLEAN,
+        },
+        encryptedKey: {
+            type: DataTypes.STRING,
+        },
+        refreshToken: {
+            type: DataTypes.TEXT,
         },
     })
 }
