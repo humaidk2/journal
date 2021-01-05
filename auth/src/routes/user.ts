@@ -4,7 +4,7 @@ import express = require('express')
 import bcrypt = require('bcrypt')
 import jwt = require('jsonwebtoken')
 
-export default function (User: any) {
+export default function (User: any, Refresh: any) {
     const router = express.Router({ mergeParams: true })
 
     const users = [
@@ -136,16 +136,28 @@ export default function (User: any) {
                             user.password
                         )
                         if (isUser) {
-                            console.log(user.dataValues)
                             const refreshSecret: any =
                                 process.env.JOURNAL_REFRESH_SECRET
                             // generate refresh token and send it back to the user
+                            const refreshData = {
+                                Id: user.dataValues.Id,
+                            }
                             const refreshToken = await jwt.sign(
-                                user.dataValues,
+                                refreshData,
                                 refreshSecret
                             )
-                            user.refreshToken = refreshToken
-                            await user.save()
+                            const saltRounds: any = Number(
+                                process.env.SALT_ROUNDS
+                            )
+                            const refreshHash = await bcrypt.hash(
+                                refreshToken,
+                                saltRounds
+                            )
+                            // user.refreshHash = refreshHash
+                            await Refresh.create({
+                                token: refreshHash,
+                                UserId: user.Id,
+                            })
                             await res.status(200).send({ token: refreshToken })
                         } else {
                             res.status(400).send({ message: 'No User found' })
@@ -170,12 +182,11 @@ export default function (User: any) {
             const accessSecret: any = process.env.JOURNAL_ACCESS_SECRET
             // verify access token
             const isTokenValid: any = await jwt.verify(
-                req.body.accessToken,
+                req.body.token,
                 accessSecret
             )
             if (!isTokenValid)
                 return res.status(403).send({ message: 'Invalid Token' })
-            console.log(isTokenValid)
             // get user data
             const user = await User.findOne({
                 where: {
@@ -183,22 +194,17 @@ export default function (User: any) {
                 },
             })
             // update all data
-            for (const key in req.body) {
-                user[key] = req.body[key]
-                // generate new refresh token
-            }
-            delete user.accessToken
-            const refreshSecret: any = process.env.JOURNAL_REFRESH_SECRET
-            const refreshToken = await jwt.sign(user.dataValues, refreshSecret)
-            user.refreshToken = refreshToken
+            // for (const key in user) {
+            //     if (req.body[key]) user[key] = req.body[key]
+            // }
+            if (req.body['encryptedKey'])
+                user['encryptedKey'] = req.body['encryptedKey']
+            if (req.body['passwordSalt'])
+                user['passwordSalt'] = req.body['passwordSalt']
             // save
             await user.save()
-            // generate new access token
-            const accessToken = await jwt.sign(user.dataValues, accessSecret, {
-                expiresIn: '10m',
-            })
             // send both back
-            await res.status(200).send({ accessToken, refreshToken })
+            res.status(200).send({ message: 'Update Successful' })
         } catch (error) {
             res.status(404).send({ message: 'Invalid Token' })
         }
@@ -208,22 +214,49 @@ export default function (User: any) {
         '/refresh',
         async (req: express.Request, res: express.Response) => {
             const refreshSecret: any = process.env.JOURNAL_REFRESH_SECRET
+            const accessSecret: any = process.env.JOURNAL_ACCESS_SECRET
             try {
-                const decoded: any = jwt.verify(req.body.token, refreshSecret)
+                const decoded: any = await jwt.verify(
+                    req.body.token,
+                    refreshSecret
+                )
+                if (!decoded)
+                    return res
+                        .status(403)
+                        .send({ message: 'Invalid refresh token' })
+                const refresh = await Refresh.findOne({
+                    where: {
+                        UserId: decoded.Id,
+                    },
+                })
+                if (!refresh)
+                    return res
+                        .status(403)
+                        .send({ message: 'Invalid refresh token' })
+                const hash: any = await bcrypt.compare(
+                    req.body.token,
+                    refresh.token
+                )
+
+                if (!hash)
+                    return res
+                        .status(403)
+                        .send({ message: 'Invalid refresh token' + hash })
                 const user = await User.findOne({
                     where: {
                         Id: decoded.Id,
                     },
                 })
-                if (user.refreshToken !== req.body.token)
-                    return res
-                        .status(403)
-                        .send({ message: 'Invalid refresh token' })
-                const accessSecret: any = process.env.JOURNAL_ACCESS_SECRET
-                const accessToken = jwt.sign(decoded, accessSecret)
-                res.status(200).send({ token: accessToken })
+                const accessToken = await jwt.sign(
+                    user.dataValues,
+                    accessSecret,
+                    {
+                        expiresIn: 30 * 60,
+                    }
+                )
+                await res.status(200).send({ token: accessToken })
             } catch (error) {
-                res.status(404).send({ message: 'Invalid refresh token' })
+                await res.status(404).send({ message: 'Invalid refresh token' })
             }
         }
     )
@@ -263,17 +296,17 @@ export default function (User: any) {
     router.post('/logout', async (req: Request, res: Response) => {
         try {
             const accessSecret: any = process.env.JOURNAL_ACCESS_SECRET
-            const decodedAccess: any = jwt.verify(req.body.token, accessSecret)
-
+            const decodedAccess: any = await jwt.verify(
+                req.body.token,
+                accessSecret
+            )
             if (!decodedAccess)
                 return res.status(403).send({ message: 'Invalid Token' })
-            const user = await User.findOne({
+            await Refresh.destroy({
                 where: {
-                    id: decodedAccess.Id,
+                    UserId: decodedAccess.Id,
                 },
             })
-            user.refreshToken = null
-            await user.save()
             res.status(200).send({ message: 'Logout Succesful' })
         } catch (error) {
             res.status(403).send({ message: 'Logout Failed' })
