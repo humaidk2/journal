@@ -1,6 +1,7 @@
-import sequelize from 'sequelize'
+import sequelize, { DataTypes } from 'sequelize'
 import { Sequelize } from 'sequelize'
 import UserCreator from './user'
+import RefreshCreator from './refresh'
 
 export default function (dbName: any) {
     const dbHost: any = process.env.JOURNAL_DB_HOST
@@ -14,8 +15,20 @@ export default function (dbName: any) {
     })
     const User = UserCreator(sequelize)
 
+    const Refresh = RefreshCreator(sequelize)
+
+    User.hasMany(Refresh, {
+        foreignKey: {
+            allowNull: false,
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
+    Refresh.belongsTo(User)
+
     return {
         User,
+        Refresh,
         sequelize,
     }
 }

@@ -10,7 +10,6 @@ interface UserInstance extends Model {
     dateOfBirth: Date
     active: boolean
     encryptedKey: string
-    refreshToken: string
 }
 
 export default function (sequelize: Sequelize): ModelCtor<UserInstance> {
@@ -44,8 +43,8 @@ export default function (sequelize: Sequelize): ModelCtor<UserInstance> {
         encryptedKey: {
             type: DataTypes.STRING,
         },
-        refreshToken: {
-            type: DataTypes.TEXT,
+        passwordSalt: {
+            type: DataTypes.STRING,
         },
     })
 }
