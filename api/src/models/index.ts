@@ -1,6 +1,4 @@
-import sequelize from 'sequelize'
 import { Sequelize } from 'sequelize'
-import UserCreator from './user'
 import EntryCreator from './entry'
 
 export default function (dbName: any) {
@@ -13,17 +11,9 @@ export default function (dbName: any) {
         dialect: 'mysql',
         logging: false,
     })
-    const User = UserCreator(sequelize)
     const Entry = EntryCreator(sequelize)
 
-    User.hasMany(Entry, {
-        foreignKey: { allowNull: false },
-        onDelete: 'CASCADE',
-    })
-    Entry.belongsTo(User)
-
     return {
-        User,
         Entry,
         sequelize,
     }

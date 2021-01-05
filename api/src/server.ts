@@ -1,19 +1,17 @@
 import express = require('express')
 import helmet = require('helmet')
 import bodyParser = require('body-parser')
-import userRouterCreator from './routes/user'
 import entryRouterCreator from './routes/entry'
 import createDb from './models/'
 
 const db = createDb(process.env.JOURNAL_DB_NAME)
-const { User, Entry, sequelize } = db
+const { Entry, sequelize } = db
 sequelize.sync({ force: true })
 const app = express()
 
 const PORT = process.env.PORT || 3000
 
-const userRouter = userRouterCreator(User)
-const entryRouter = entryRouterCreator(Entry, User)
+const entryRouter = entryRouterCreator(Entry)
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -24,7 +22,6 @@ app.use(bodyParser.json())
 app.use(helmet())
 app.set('json spaces', 2)
 
-app.use('/user', userRouter)
 app.use('/entry', entryRouter)
 
 app.get('/createdb', async (req: any, res: any) => {

@@ -17,5 +17,11 @@ export default function (sequelize: Sequelize): ModelCtor<EntryInstance> {
         data: {
             type: DataTypes.STRING,
         },
+        salt: {
+            type: DataTypes.STRING,
+        },
+        UserId: {
+            type: DataTypes.STRING,
+        },
     })
 }

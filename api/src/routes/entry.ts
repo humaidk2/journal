@@ -1,7 +1,8 @@
 import express = require('express')
-import { Request, Response } from 'express'
+import jwt = require('jsonwebtoken')
+import { Request, Response, NextFunction } from 'express'
 
-export default function (Entry: any, User: any) {
+export default function (Entry: any) {
     const router = express.Router({ mergeParams: true })
 
     const entries = [
@@ -27,10 +28,23 @@ export default function (Entry: any, User: any) {
             UserId: 'user0',
         },
     ]
+    router.use('/', async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const authHeader = req.headers['authorization']
+            const authToken: any = authHeader?.split(' ')[1]
+            const accessSecret: any = process.env.JOURNAL_ACCESS_SECRET
+            const user = await jwt.verify(authToken, accessSecret)
+            res.locals.user = user
+            next()
+        } catch (error) {
+            res.status(404).send({ message: 'Not Authorized' })
+        }
+    })
     router.post('/', async (req: Request, res: Response) => {
         try {
             const entry = await Entry.create({
-                ...req.body,
+                data: req.body.data,
+                UserId: res.locals.user.Id,
             })
             if (entry) res.status(200).send(entry)
             else res.status(404).send({ message: 'Entry not inserted' })
@@ -40,18 +54,9 @@ export default function (Entry: any, User: any) {
     })
     router.get('/', async (req: Request, res: Response) => {
         try {
-            const entries = await Entry.findAll()
-            if (entries) res.status(200).send(entries)
-            else res.status(404).send({})
-        } catch (error) {
-            await res.status(404).send({ error })
-        }
-    })
-    router.get('/:userId', async (req: Request, res: Response) => {
-        try {
             const filteredEntries = await Entry.findAll({
                 where: {
-                    UserId: req.params.userId,
+                    UserId: res.locals.user.Id,
                 },
             })
             if (filteredEntries.length !== 0)
@@ -62,12 +67,12 @@ export default function (Entry: any, User: any) {
         }
     })
 
-    router.get('/:userId/:entryId', async (req: Request, res: Response) => {
+    router.get('/:entryId', async (req: Request, res: Response) => {
         try {
             const entry = await Entry.findOne({
                 where: {
                     Id: req.params.entryId,
-                    UserId: req.params.userId,
+                    UserId: res.locals.user.Id,
                 },
             })
             if (entry) res.status(200).send(entry)
