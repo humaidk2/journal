@@ -5,13 +5,13 @@ import userRouterCreator from './routes/user'
 import createDb from './models/'
 
 const db = createDb(process.env.JOURNAL_DB_NAME)
-const { User, sequelize } = db
+const { User, Refresh, sequelize } = db
 sequelize.sync({ force: true })
 const app = express()
 
 const PORT = process.env.PORT || 3000
 
-const userRouter = userRouterCreator(User)
+const userRouter = userRouterCreator(User, Refresh)
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
