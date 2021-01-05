@@ -199,6 +199,8 @@ export default function (User: any, Refresh: any) {
             // }
             if (req.body['encryptedKey'])
                 user['encryptedKey'] = req.body['encryptedKey']
+            if (req.body['encryptedKeyIv'])
+                user['encryptedKeyIv'] = req.body['encryptedKeyIv']
             if (req.body['passwordSalt'])
                 user['passwordSalt'] = req.body['passwordSalt']
             // save

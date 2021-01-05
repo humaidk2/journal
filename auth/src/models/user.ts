@@ -43,6 +43,9 @@ export default function (sequelize: Sequelize): ModelCtor<UserInstance> {
         encryptedKey: {
             type: DataTypes.STRING,
         },
+        encryptedKeyIv: {
+            type: DataTypes.STRING,
+        },
         passwordSalt: {
             type: DataTypes.STRING,
         },
