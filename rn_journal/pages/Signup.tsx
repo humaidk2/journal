@@ -108,7 +108,7 @@ const Signup = ({ navigation, route }: any) => {
         //   console.log('File write external storage permission denied');
         // }
         ToastAndroid.show(route.params.name, ToastAndroid.SHORT)
-        navigation.navigate('Login', { name: 'Joe' })
+        navigation.navigate('Login')
     }
     const signup = async (formData: FormData) => {
         console.log(formData)
