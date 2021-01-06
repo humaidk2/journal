@@ -44,6 +44,7 @@ export default function (Entry: any) {
         try {
             const entry = await Entry.create({
                 data: req.body.data,
+                salt: req.body.salt,
                 UserId: res.locals.user.Id,
             })
             if (entry) res.status(200).send(entry)
@@ -59,9 +60,7 @@ export default function (Entry: any) {
                     UserId: res.locals.user.Id,
                 },
             })
-            if (filteredEntries.length !== 0)
-                res.status(200).send(filteredEntries)
-            else res.status(404).send({ message: 'User has no entries' })
+            res.status(200).send(filteredEntries)
         } catch (error) {
             await res.status(404).send({ error })
         }
