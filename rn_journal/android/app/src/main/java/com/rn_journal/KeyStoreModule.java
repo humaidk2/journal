@@ -18,6 +18,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -82,9 +83,9 @@ public class KeyStoreModule extends ReactContextBaseJavaModule {
             // get user password and file input stream
             char[] password = kPassword.toCharArray();
             ks.load(null);
-//            try (FileInputStream fis = new FileInputStream("keyStoreName")) {
-//                ks.load(fis, password);
-//            }
+            try (FileInputStream fis = new FileInputStream(new File(Environment.getExternalStorageDirectory().getAbsolutePath(),"keyStoreName"))) {
+                ks.load(fis, password);
+            }
 
             KeyStore.ProtectionParameter protParam =
                     new KeyStore.PasswordProtection(password);
@@ -110,7 +111,7 @@ public class KeyStoreModule extends ReactContextBaseJavaModule {
         }
     }
     @ReactMethod
-    public String getKey(String alias, String kPassword, Promise promise) {
+    public void getKey(String alias, String kPassword, Promise promise) {
         try {
             KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
 
@@ -125,6 +126,7 @@ public class KeyStoreModule extends ReactContextBaseJavaModule {
             SecretKey secretKey = secretKeyEntry.getSecretKey();
             String encodedKey = new String(secretKey.getEncoded(), "UTF-8");//Base64.getEncoder().encodeToString(secretKey.getEncoded());
             promise.resolve(encodedKey);
+            return;
         } catch (KeyStoreException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
@@ -139,8 +141,11 @@ public class KeyStoreModule extends ReactContextBaseJavaModule {
             e.printStackTrace();
         } catch (UnrecoverableEntryException e) {
             e.printStackTrace();
+        } finally {
+            promise.resolve("");
+            return ;
         }
-        return "failure";
+
     }
     @ReactMethod
     public void deleteKey(String alias, String kPassword) {
@@ -233,7 +238,8 @@ public class KeyStoreModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void encrypt(String baseData, String baseKey, String baseIv, Promise promise)  {
         String hash = "";
-        byte[] data = Base64.decode(baseData, Base64.NO_WRAP);
+//        byte[] data = Base64.decode(baseData, Base64.NO_WRAP);
+        byte[] data = baseData.getBytes(Charset.forName("UTF-8"));
         byte[] key = Base64.decode(baseKey, Base64.NO_WRAP);
         byte[] iv = Base64.decode(baseIv, Base64.NO_WRAP);
         try {
@@ -274,7 +280,8 @@ public class KeyStoreModule extends ReactContextBaseJavaModule {
             IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
             cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivParameterSpec);
             byte[] byteData = cipher.doFinal(hash);
-            data = Base64.encodeToString(byteData, Base64.NO_WRAP);
+            data = new String(byteData, Charset.forName("UTF-8"));
+//            data = Base64.encodeToString(byteData, Base64.NO_WRAP);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (BadPaddingException e) {
