@@ -29,31 +29,39 @@ declare const global: { HermesInternal: null | {} }
 
 const { KeyStoreModule } = NativeModules
 
-const Login = ({ navigation }: any) => {
+const Login = ({ navigation, signin }: any) => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const login = async () => {
-        // const granted = await PermissionsAndroid.request(
-        //   PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-        //   {
-        //     title: 'Journal App Permission',
-        //     message:
-        //       'Journal needs access to your file storage' +
-        //       'so you can secure your data.',
-        //     buttonNeutral: 'Ask Me Later',
-        //     buttonNegative: 'Cancel',
-        //     buttonPositive: 'OK',
-        //   },
-        // );
-        // console.log(username);
-        // console.log(password);
-        // // KeyStoreModule.setKey(username, password);
-        // if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        //   console.log('You can use the file storage');
-        //   KeyStoreModule.setKey('myKey', 'journalPassword', 'humaid');
-        // } else {
-        //   console.log('File write external storage permission denied');
-        // }
+        const writeGranted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+            {
+                title: 'Journal App Permission',
+                message:
+                    'Journal needs access to your file storage' +
+                    'so you can secure your data.',
+                buttonNeutral: 'Ask Me Later',
+                buttonNegative: 'Cancel',
+                buttonPositive: 'OK',
+            }
+        )
+        const readGranted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+            {
+                title: 'Journal App Permission',
+                message:
+                    'Journal needs access to your file storage' +
+                    'so you can secure your data.',
+                buttonNeutral: 'Ask Me Later',
+                buttonNegative: 'Cancel',
+                buttonPositive: 'OK',
+            }
+        )
+        // KeyStoreModule.setKey(username, password);
+        if (writeGranted !== PermissionsAndroid.RESULTS.GRANTED) {
+            console.log('File write external storage permission denied')
+            return
+        }
         try {
             const refreshJson = await fetch(
                 'http://10.0.1.19:3000/user/login',
@@ -71,7 +79,6 @@ const Login = ({ navigation }: any) => {
                 }
             )
             const refreshToken: any = await refreshJson.json()
-            console.log(refreshToken)
             const accessJson = await fetch(
                 'http://10.0.1.19:3000/user/refresh',
                 {
@@ -100,12 +107,46 @@ const Login = ({ navigation }: any) => {
                     }),
                 }
             )
-            const user = await userJson.json()
+            let user = await userJson.json()
             console.log(user)
-            if (user.encryptedKey) {
+            if (user.decoded.encryptedKey) {
+                user = user.decoded
                 console.log('we have a key')
                 console.log('we just need to generate a key with the password')
                 console.log('and decrypt the key')
+                const encryptedKey = user.encryptedKey
+                const encryptedKeyIv = user.encryptedKeyIv
+                const passwordSalt = user.passwordSalt
+                console.log('encrypted Key  = ' + encryptedKey)
+                console.log('passwordSalt = ' + passwordSalt)
+                console.log('encryptedKeyIv = ' + encryptedKeyIv)
+                const passwordKey = await KeyStoreModule.generatePasswordKey(
+                    password,
+                    passwordSalt,
+                    10000,
+                    32
+                )
+                console.log('passwordKey = ' + passwordKey)
+                const entryKey = await KeyStoreModule.decrypt(
+                    encryptedKey,
+                    passwordKey,
+                    encryptedKeyIv
+                )
+                await console.log('entry key = ' + entryKey)
+                // store encryption key in key store
+                await KeyStoreModule.setKey(
+                    'entryKey',
+                    'journalPassword',
+                    entryKey
+                )
+                // store encryption key in key store
+                await KeyStoreModule.setKey(
+                    'refreshToken',
+                    'journalPassword',
+                    refreshToken.token
+                )
+                // navigate to entries page
+                await signin(refreshToken.token)
             } else {
                 console.log("we don't have a key")
                 console.log('we need to generate an aes key')
@@ -150,50 +191,20 @@ const Login = ({ navigation }: any) => {
                         }),
                     }
                 )
-                const user = await userJson.json()
-
-                // store keys in keystore
-                // login complete
-                // set user.key = key
-                // move to the next page with the user stuff
-
-                // in the next stage we will load the user data with the access token
-                // decrypt the info using the key
-                // if we add a new entry
-                // encrypt the info using the key
-
-                // and upload it to entry
-                // const decryptedKey = await KeyStoreModule.decrypt(
-                //   encryptedKey,
-                //   passwordKey,
-                //   encryptedKeyIv,
-                // );
-                // console.log('decryptedKey = ' + decryptedKey);
-                // const entryKey = await crypto.randomBytes(32).toString('hex');
-                // const passwordSalt = await crypto.randomBytes(32).toString('hex');
-                // const encryptedKeyIv = await crypto.randomBytes(32).toString('hex');
-                // console.log('entry Key  = ' + entryKey);
-                // console.log('passwordSalt = ' + passwordSalt);
-                // console.log('encryptedKeyIv = ' + encryptedKeyIv);
-                // const [error, passwordKey]: any = await new Promise((resolve) =>
-                //   crypto.pbkdf2(password, passwordSalt, 15, 256, 'AES', resolve),
-                // );
-                // console.log('passwordKey = ' + passwordKey);
-                // const cipher = await crypto.createCipheriv(
-                //   'aes-256-gcm',
-                //   passwordKey,
-                //   encryptedKeyIv,
-                // );
-                // const encryptedKey = Buffer.concat([
-                //   cipher.update(entryKey),
-                //   cipher.final(),
-                // ]).toString('hex');
-                // console.log('encryptedKey = ' + encryptedKey);
-                // api request with encrypted key
-                // check if password key is the same each time, the app is run by making the salts password salt constant
-                // const decipher = crypto.createDecipheriv(algorithm, secretKey, Buffer.from(hash.iv, 'hex'));
-                // const decrpyted = Buffer.concat([decipher.update(Buffer.from(hash.content, 'hex')), decipher.final()]);
-                // return decrpyted.toString();
+                // store encryption key in key store
+                await KeyStoreModule.setKey(
+                    'entryKey',
+                    'journalPassword',
+                    entryKey
+                )
+                // store encryption key in key store
+                await KeyStoreModule.setKey(
+                    'refreshToken',
+                    'journalPassword',
+                    refreshToken.token
+                )
+                // navigate to entries page
+                await signin(refreshToken.token)
             }
         } catch (error) {
             console.log('error')
