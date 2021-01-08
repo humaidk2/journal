@@ -6,9 +6,7 @@ React Native app to store journal, all posts will be encrypted and protected wit
 
 I found a couple of journal apps, but I don't trust them to store my data.
 
-Since we're encrypting the data using the password based key, we can't separate auth into a separate service
-
-Since we're encrypting the data and want to keep a fast app, we have to remove the forget password feature.
+So I built my own
 
 ## How it will work
 
@@ -82,16 +80,20 @@ This project is divided in to three components:
 [X] Get docker to work
 [X] Add testing with docker
 [X] Complete and test auth service
-[] Add middleware for diary entry service
-[] Complete and test diary entry service
-[] Create react native app
-[] Display entries in app using mock data
-[] Create form to add entries
-[] Load data from backend api
-[] Add other crud routes
-[] Setup registration page
-[] Integrate auth
-[] Setup encrypted data
+[X] Add middleware for diary entry service
+[X] Complete and test diary entry service
+[X] Create react native app
+[X] Display entries in app using mock data
+[X] Create form to add entries
+[X] Load data from backend api
+[X] Add other crud routes
+[X] Setup registration page
+[X] Integrate auth
+[X] Setup encrypted data
+[X] Setup autologin using refresh token
+[] Styling the design of entries page
+[] Edit page with requests every few seconds or when user finished typing
+[] Calendar View to show when the user made entries
 
 -   Finish integrating sequelize with routes
 -   Add mysql to docker
@@ -105,3 +107,7 @@ This project is divided in to three components:
          /
 
     User ------------- Entry Api - Postentry/GetEntry/GetallEntries/DeleteEntry/(get user id from access token)
+    \
+     \
+     \
+     \---------- React Native app - login page/register/ diary entries page/addentrypage==editentrypage
