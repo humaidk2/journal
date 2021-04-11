@@ -27,7 +27,8 @@ import {
     Dimensions,
 } from 'react-native'
 import DatePicker from 'react-native-datepicker'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
+import Config from 'react-native-config'
 
 declare const global: { HermesInternal: null | {} }
 
@@ -43,15 +44,13 @@ type FormData = {
 }
 
 const Signup = ({ navigation, route }: any) => {
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
-    const [firstName, setFirstName] = useState('')
-    const [lastName, setLastName] = useState('')
-    const [dob, setDob] = useState('29/12/2020')
-    const [email, setEmail] = useState('')
-
-    const { register, handleSubmit, setValue, errors } = useForm<FormData>()
-
+    const {
+        control,
+        register,
+        handleSubmit,
+        setValue,
+        formState: { errors },
+    } = useForm<FormData>()
     useEffect(() => {
         register('firstName', {
             required: { value: true, message: 'firstName is required' },
@@ -113,7 +112,7 @@ const Signup = ({ navigation, route }: any) => {
     const signup = async (formData: FormData) => {
         console.log(formData)
         try {
-            const res = await fetch('http://10.0.1.19:3000/user/signup', {
+            const res = await fetch(`${Config.AUTH_API}/user/signup`, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -126,7 +125,7 @@ const Signup = ({ navigation, route }: any) => {
             const emailToken: any = await res.json()
             console.log(emailToken)
             const data = await fetch(
-                `http://10.0.1.19:3000/user/verifyEmail?token=${emailToken.token}`
+                `${Config.AUTH_API}/user/verifyEmail?token=${emailToken.token}`
             )
             const isVerified = await data.json()
             console.log(isVerified)
@@ -199,28 +198,34 @@ const Signup = ({ navigation, route }: any) => {
 
                         <View style={styles.inputForm}>
                             <Text style={styles.label}>DOB</Text>
-                            <DatePicker
-                                date={dob}
-                                mode="date"
-                                style={styles.input}
-                                placeholder="select date"
-                                format="DD-MM-YYYY"
-                                confirmBtnText="Confirm"
-                                cancelBtnText="Cancel"
-                                customStyles={{
-                                    dateIcon: {
-                                        position: 'absolute',
-                                        left: 0,
-                                        top: 4,
-                                        marginLeft: 0,
-                                    },
-                                    dateInput: {
-                                        marginLeft: 36,
-                                    },
-                                }}
-                                onDateChange={(date) => {
-                                    setValue('dob', date)
-                                }}
+                            <Controller
+                                control={control}
+                                render={({ onChange, value }) => (
+                                    <DatePicker
+                                        date={value}
+                                        mode="date"
+                                        style={styles.input}
+                                        placeholder="select date"
+                                        format="DD-MM-YYYY"
+                                        confirmBtnText="Confirm"
+                                        cancelBtnText="Cancel"
+                                        customStyles={{
+                                            dateIcon: {
+                                                position: 'absolute',
+                                                left: 0,
+                                                top: 4,
+                                                marginLeft: 0,
+                                            },
+                                            dateInput: {
+                                                marginLeft: 36,
+                                            },
+                                        }}
+                                        onDateChange={onChange}
+                                    />
+                                )}
+                                name="firstName"
+                                rules={{ required: true }}
+                                defaultValue=""
                             />
                         </View>
                         {errors.dob && (
