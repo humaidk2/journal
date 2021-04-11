@@ -3,6 +3,8 @@ services:
     auth_db:
         image: mysql
         command: --default-authentication-plugin=mysql_native_password --init-file /data/application/init.sql
+        cap_add:
+            - SYS_NICE 
         restart: always
         volumes:
             - ./init.sql:/data/application/init.sql
