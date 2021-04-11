@@ -25,13 +25,14 @@ import {
     TouchableOpacity,
     FlatList,
 } from 'react-native'
+import Config from 'react-native-config'
 
 const { KeyStoreModule } = NativeModules
 
 const EntryForm = ({ navigation, refreshToken, logout }: any) => {
     const [data, setData] = useState('')
     const saveEntry = async () => {
-        const accessJson = await fetch('http://10.0.1.19:3000/user/refresh', {
+        const accessJson = await fetch(`${Config.AUTH_API}/user/refresh`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -51,7 +52,7 @@ const EntryForm = ({ navigation, refreshToken, logout }: any) => {
         const message = await KeyStoreModule.encrypt(data, entryKey, entryIv)
         console.log('entryIv = ' + entryIv)
         console.log('message = ' + message)
-        const outputJson = await fetch('http://10.0.1.19:8080/entry', {
+        const outputJson = await fetch(`${Config.DIARY_API}/entry`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
