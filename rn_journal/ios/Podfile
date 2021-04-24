@@ -8,6 +8,8 @@ target 'rn_journal' do
 
   use_react_native!(:path => config["reactNativePath"])
 
+  pod 'react-native-config', :path => '../node_modules/react-native-config'
+
   target 'rn_journalTests' do
     inherit! :complete
     # Pods for testing

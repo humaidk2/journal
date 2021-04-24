@@ -24,6 +24,7 @@ import {
     Dimensions,
     TouchableOpacity,
 } from 'react-native'
+import Config from 'react-native-config'
 
 declare const global: { HermesInternal: null | {} }
 
@@ -63,39 +64,33 @@ const Login = ({ navigation, signin }: any) => {
             return
         }
         try {
-            const refreshJson = await fetch(
-                'http://10.0.1.19:3000/user/login',
-                {
-                    method: 'POST',
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        username,
-                        password,
-                        email: 'test@hum.com',
-                    }),
-                }
-            )
+            const refreshJson = await fetch(`${Config.AUTH_API}/user/login`, {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username,
+                    password,
+                    email: 'test@hum.com',
+                }),
+            })
             const refreshToken: any = await refreshJson.json()
-            const accessJson = await fetch(
-                'http://10.0.1.19:3000/user/refresh',
-                {
-                    method: 'POST',
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        token: refreshToken.token,
-                    }),
-                }
-            )
+            const accessJson = await fetch(`${Config.AUTH_API}/user/refresh`, {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    token: refreshToken.token,
+                }),
+            })
             const accessToken = await accessJson.json()
             console.log(accessToken)
             const userJson = await fetch(
-                'http://10.0.1.19:3000/user/accessToken',
+                `${Config.AUTH_API}/user/accessToken`,
                 {
                     method: 'POST',
                     headers: {
@@ -176,7 +171,7 @@ const Login = ({ navigation, signin }: any) => {
                 // alright we now have a key
                 // send encrypted key to the database
                 const updateJson = await fetch(
-                    'http://10.0.1.19:3000/user/update',
+                    `${Config.AUTH_API}/user/update`,
                     {
                         method: 'POST',
                         headers: {

@@ -25,6 +25,7 @@ import {
     TouchableOpacity,
     FlatList,
 } from 'react-native'
+import Config from 'react-native-config'
 
 const { KeyStoreModule } = NativeModules
 import Loading from './Loading'
@@ -42,22 +43,19 @@ const Diary = ({ navigation, refreshToken, logout }: any) => {
         // get key from keystore
         // decrypt and display all routes
         ;(async () => {
-            const accessJson = await fetch(
-                'http://10.0.1.19:3000/user/refresh',
-                {
-                    method: 'POST',
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        token: refreshToken,
-                    }),
-                }
-            )
+            const accessJson = await fetch(`${Config.AUTH_API}/user/refresh`, {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    token: refreshToken,
+                }),
+            })
             if (accessJson.status !== 200) logout()
             const accessToken = await accessJson.json()
-            const entriesString = await fetch('http://10.0.1.19:8080/entry', {
+            const entriesString = await fetch(`${Config.DIARY_API}/entry`, {
                 method: 'GET',
                 headers: {
                     Accept: 'application/json',
@@ -71,10 +69,6 @@ const Diary = ({ navigation, refreshToken, logout }: any) => {
                 'entryKey',
                 'journalPassword'
             )
-            await console.log('entryKey = ' + entryKey)
-            await console.log('entries = ')
-            console.log(entries)
-            console.log(entries.length)
             let arr: any = []
             for (let i = 0; i < entries.length; i++) {
                 //decrypt
@@ -88,11 +82,8 @@ const Diary = ({ navigation, refreshToken, logout }: any) => {
                 arr[i].Id = entries[i].Id
                 arr[i].createdAt = entries[i].createdAt
             }
-            await console.log(arr)
             await setEntries({ entries: arr, isLoading: false })
         })()
-        console.log('refreshToken' + refreshToken)
-        console.log(refreshToken)
     }, [])
     const getKey = async () => {
         console.log('getting key...')
@@ -103,7 +94,7 @@ const Diary = ({ navigation, refreshToken, logout }: any) => {
         console.log(entryKey)
     }
     const logoutRequest = async () => {
-        const accessJson = await fetch('http://10.0.1.19:3000/user/refresh', {
+        const accessJson = await fetch(`${Config.AUTH_API}/user/refresh`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -114,7 +105,7 @@ const Diary = ({ navigation, refreshToken, logout }: any) => {
             }),
         })
         const accessToken = await accessJson.json()
-        const logoutRes = await fetch('http://10.0.1.19:3000/user/logout', {
+        const logoutRes = await fetch(`${Config.AUTH_API}/user/logout`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -124,7 +115,6 @@ const Diary = ({ navigation, refreshToken, logout }: any) => {
                 token: accessToken.token,
             }),
         })
-        console.log('logout result status = ' + logoutRes.status)
         logout()
     }
     const addEntry = () => {

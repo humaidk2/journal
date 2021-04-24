@@ -28,9 +28,9 @@ import Login from './pages/Login'
 import Diary from './pages/Diary'
 import EntryForm from './pages/EntryForm'
 import Loading from './pages/Loading'
+import Config from 'react-native-config'
 
 const { KeyStoreModule } = NativeModules
-
 const Stack = createStackNavigator()
 const App = () => {
     const [refresh, setRefresh] = useState({
@@ -58,7 +58,7 @@ const App = () => {
                     }
                 }
                 const userJson = await fetch(
-                    'http://10.0.1.19:3000/user/refreshToken',
+                    `${Config.AUTH_API}/refreshToken`,
                     {
                         method: 'POST',
                         headers: {
