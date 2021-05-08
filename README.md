@@ -72,28 +72,28 @@ This project is divided in to three components:
 
 ### Tasks to be completed
 
-[X] Add tests for routes
-[X] Create sequelize models
-[X] Test sequelize models
-[X] Integrate Sequelize models
-[X] Separate Auth and api service
-[X] Get docker to work
-[X] Add testing with docker
-[X] Complete and test auth service
-[X] Add middleware for diary entry service
-[X] Complete and test diary entry service
-[X] Create react native app
-[X] Display entries in app using mock data
-[X] Create form to add entries
-[X] Load data from backend api
-[X] Add other crud routes
-[X] Setup registration page
-[X] Integrate auth
-[X] Setup encrypted data
-[X] Setup autologin using refresh token
-[] Styling the design of entries page
-[] Edit page with requests every few seconds or when user finished typing
-[] Calendar View to show when the user made entries
+- [X] Add tests for routes
+- [X] Create sequelize models
+- [X] Test sequelize models
+- [X] Integrate Sequelize models
+- [X] Separate Auth and api service
+- [X] Get docker to work
+- [X] Add testing with docker
+- [X] Complete and test auth service
+- [X] Add middleware for diary entry service
+- [X] Complete and test diary entry service
+- [X] Create react native app
+- [X] Display entries in app using mock data
+- [X] Create form to add entries
+- [X] Load data from backend api
+- [X] Add other crud routes
+- [X] Setup registration page
+- [X] Integrate auth
+- [X] Setup encrypted data
+- [X] Setup autologin using refresh token
+- [] Styling the design of entries page
+- [] Edit page with requests every few seconds or when user finished typing
+- [] Calendar View to show when the user made entries
 
 -   Finish integrating sequelize with routes
 -   Add mysql to docker
